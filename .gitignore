@@ -1,0 +1,19 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+data/
+backend/data/
+backend/.pytest_cache/
+backend/app/cache/offline_knowledge_custom.json
+# Frontend ignore rules
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+frontend/.env
+frontend/.env.local
+frontend/vite.config.js.timestamp*
+*.timestamp*.mjs
+
