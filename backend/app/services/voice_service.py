@@ -1,11 +1,11 @@
 from fastapi import UploadFile
 
-from app.services.gemini_service import GeminiService, GeminiUnavailableError
+from app.services.openrouter_service import OpenRouterService, OpenRouterUnavailableError
 
 
 class VoiceService:
     def __init__(self) -> None:
-        self.gemini_service = GeminiService()
+        self.openrouter_service = OpenRouterService()
 
     async def transcribe(self, file: UploadFile) -> str:
         content = await file.read()
@@ -15,9 +15,9 @@ class VoiceService:
             return content.decode("utf-8").strip()
 
         try:
-            return self.gemini_service.transcribe_audio(content, content_type)
-        except GeminiUnavailableError as exc:
-            raise GeminiUnavailableError(
-                "Audio transcription requires GEMINI_API_KEY. The service is ready for Whisper adapter integration."
+            return self.openrouter_service.transcribe_audio(content, content_type)
+        except OpenRouterUnavailableError as exc:
+            raise OpenRouterUnavailableError(
+                "Audio transcription requires OPENROUTER_API_KEY. The service is ready for Whisper adapter integration."
             ) from exc
 

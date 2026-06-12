@@ -46,7 +46,7 @@ def init_db() -> None:
                 created_at INTEGER NOT NULL
             );
 
-            CREATE TABLE IF NOT EXISTS gemini_logs (
+            CREATE TABLE IF NOT EXISTS openrouter_logs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 prompt_type TEXT NOT NULL,
                 success INTEGER NOT NULL,

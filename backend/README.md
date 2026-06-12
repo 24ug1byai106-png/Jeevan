@@ -39,14 +39,14 @@ Open:
 - Swagger: `http://localhost:8000/docs`
 - Health: `http://localhost:8000/health`
 
-If `GEMINI_API_KEY` is not set, emergency and ASHA endpoints still work through the offline cache.
+If `OPENROUTER_API_KEY` is not set, emergency and ASHA endpoints still work through the offline cache.
 
 ## Environment Variables
 
 | Variable | Purpose |
 | --- | --- |
-| `GEMINI_API_KEY` | Gemini API key. |
-| `GEMINI_MODEL` | Gemini model name, default `gemini-1.5-flash`. |
+| `OPENROUTER_API_KEY` | OpenRouter API key. |
+| `OPENROUTER_MODEL` | OpenRouter model name, default `openrouter/auto`. |
 | `SQLITE_PATH` | SQLite database path, default `data/jeevan_ai.sqlite3`. |
 | `ENABLE_RESPONSE_CACHE` | Enables SQLite response cache. |
 | `RESPONSE_CACHE_TTL_SECONDS` | Cache TTL in seconds. |
@@ -152,7 +152,7 @@ docker compose up --build
 2. Set root directory to `backend`.
 3. Build command: `pip install -r requirements.txt`
 4. Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Add environment variables from `.env.example`, especially `GEMINI_API_KEY`.
+5. Add environment variables from `.env.example`, especially `OPENROUTER_API_KEY`.
 6. Add a persistent disk if you want SQLite data to survive redeploys.
 
 ## Deploy To Railway
@@ -160,7 +160,7 @@ docker compose up --build
 1. Create a new Railway project from the repository.
 2. Set the service root to `backend`.
 3. Railway will use the Dockerfile, or set start command to `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
-4. Add `GEMINI_API_KEY` and other environment variables.
+4. Add `OPENROUTER_API_KEY` and other environment variables.
 5. Mount persistent storage for `data/` if required.
 
 ## Deploy To VPS

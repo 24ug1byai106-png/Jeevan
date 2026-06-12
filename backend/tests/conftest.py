@@ -5,7 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 os.environ["ENVIRONMENT"] = "test"
-os.environ["GEMINI_API_KEY"] = ""
+os.environ["OPENROUTER_API_KEY"] = ""
 os.environ["SQLITE_PATH"] = "data/test_jeevan_ai.sqlite3"
 
 from app.main import app

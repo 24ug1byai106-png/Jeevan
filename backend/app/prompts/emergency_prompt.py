@@ -27,7 +27,7 @@ JSON schema:
   "avoid": ["2 to 5 unsafe actions to avoid"],
   "hospitalRequired": true/false,
   "disclaimer": "{DISCLAIMER}",
-  "source": "gemini"
+  "source": "openrouter"
 }}
 """.strip()
 

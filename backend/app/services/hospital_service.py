@@ -11,7 +11,8 @@ class HospitalService:
 
     async def nearby(self, lat: float, lng: float) -> list[HospitalResponse]:
         query = self._build_overpass_query(lat, lng)
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        headers = {"User-Agent": "JeevanAI/1.0 (Emergency Healthcare App)"}
+        async with httpx.AsyncClient(timeout=15.0, headers=headers) as client:
             response = await client.post(self.settings.overpass_url, data={"data": query})
             response.raise_for_status()
         elements = response.json().get("elements", [])

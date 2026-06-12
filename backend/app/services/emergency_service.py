@@ -2,7 +2,7 @@ from app.cache.response_cache import ResponseCache, build_cache_key
 from app.prompts.emergency_prompt import build_emergency_prompt, build_sos_action
 from app.schemas.common import DISCLAIMER, Language, Severity
 from app.schemas.emergency import EmergencyAnalysisResponse, SOSResponse
-from app.services.gemini_service import GeminiService, GeminiUnavailableError
+from app.services.openrouter_service import OpenRouterService, OpenRouterUnavailableError
 from app.services.offline_knowledge_service import OfflineKnowledgeService
 from app.services.translation_service import TranslationService
 from app.services.triage_service import TriageService
@@ -12,7 +12,7 @@ class EmergencyService:
     def __init__(self) -> None:
         self.translation_service = TranslationService()
         self.triage_service = TriageService()
-        self.gemini_service = GeminiService()
+        self.openrouter_service = OpenRouterService()
         self.offline_service = OfflineKnowledgeService()
         self.cache = ResponseCache()
 
@@ -26,9 +26,9 @@ class EmergencyService:
 
         prompt = build_emergency_prompt(message, prompt_language)
         try:
-            response = self.gemini_service.generate_json(prompt, EmergencyAnalysisResponse, "emergency_analyze")
+            response = self.openrouter_service.generate_json(prompt, EmergencyAnalysisResponse, "emergency_analyze")
             response = self._enforce_guardrails(message, response)
-        except GeminiUnavailableError:
+        except OpenRouterUnavailableError:
             response = self.offline_service.get_guide(message, language)
 
         self.cache.set(cache_key, response.model_dump(by_alias=True))
@@ -59,7 +59,7 @@ class EmergencyService:
                 "severity_score": score,
                 "hospital_required": hospital_required,
                 "disclaimer": DISCLAIMER,
-                "source": response.source or "gemini",
+                "source": response.source or "openrouter",
             }
         )
 

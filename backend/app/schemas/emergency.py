@@ -23,7 +23,7 @@ class EmergencyAnalysisResponse(BaseModel):
     avoid: list[str]
     hospital_required: bool = Field(..., alias="hospitalRequired")
     disclaimer: str = DISCLAIMER
-    source: str = Field(default="gemini", examples=["gemini"])
+    source: str = Field(default="openrouter", examples=["openrouter"])
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -41,7 +41,7 @@ class EmergencyAnalysisResponse(BaseModel):
                 "avoid": ["Do not cut the wound.", "Do not suck out venom."],
                 "hospitalRequired": True,
                 "disclaimer": DISCLAIMER,
-                "source": "gemini",
+                "source": "openrouter",
             }
         },
     )

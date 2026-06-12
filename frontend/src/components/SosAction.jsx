@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Bell, BellOff, Volume2, ShieldAlert, AlertTriangle, Zap, RefreshCw, Phone } from 'lucide-react'
 import { logEmergencyToSupabase } from '../supabaseClient'
+import { useLanguage } from '../contexts/LanguageContext'
 
 export default function SosAction() {
+  const { t } = useLanguage()
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [sosCard, setSosCard] = useState(null)
@@ -14,13 +16,13 @@ export default function SosAction() {
   const oscillatorRef = useRef(null)
   const gainNodeRef = useRef(null)
 
-  // Hotkeys to trigger instant response
-  const hotkeys = [
-    { label: 'Snake Bite', query: 'snake bite' },
-    { label: 'Heart Attack', query: 'heart attack' },
-    { label: 'Severe Bleeding', query: 'severe bleeding' },
-    { label: 'Drowning', query: 'drowning' },
-    { label: 'Choking', query: 'choking' }
+  // Hotkeys to trigger instant response - keys for translation
+  const hotkeyKeys = [
+    { label_key: 'sos.card.hotkey.snake', query: 'snake bite' },
+    { label_key: 'sos.card.hotkey.heart', query: 'heart attack' },
+    { label_key: 'sos.card.hotkey.bleeding', query: 'severe bleeding' },
+    { label_key: 'sos.card.hotkey.drowning', query: 'drowning' },
+    { label_key: 'sos.card.hotkey.choking', query: 'choking' },
   ]
 
   const triggerSos = async (searchQuery) => {
@@ -149,11 +151,11 @@ export default function SosAction() {
               >
                 {audioSiren ? (
                   <>
-                    <BellOff size={16} /> Mute Alarm
+                    <BellOff size={16} /> {t('sos.mute')}
                   </>
                 ) : (
                   <>
-                    <Volume2 size={16} /> Sound Alarm
+                    <Volume2 size={16} /> {t('sos.sound')}
                   </>
                 )}
               </button>
@@ -163,21 +165,21 @@ export default function SosAction() {
                 onClick={deactivateAlert}
                 style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-base)' }}
               >
-                Cancel Alert
+                {t('sos.btn.cancel')}
               </button>
             </div>
 
             <div style={{ margin: '2rem 0' }}>
               <ShieldAlert size={80} style={{ color: 'var(--severity-critical)', animation: 'pulse-red 1s infinite', margin: '0 auto 1rem' }} />
               <h2 style={{ fontSize: '2.5rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--severity-critical)', fontFamily: 'var(--font-heading)' }}>
-                CRITICAL EMERGENCY ACTIVATED
+                {t('sos.activated.emergency')}
               </h2>
             </div>
 
             {loading && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
                 <RefreshCw className="animate-spin" size={32} style={{ color: 'var(--severity-critical)' }} />
-                <p style={{ color: 'var(--text-primary)' }}>Formulating Quick SOS Card...</p>
+                <p style={{ color: 'var(--text-primary)' }}>{t('sos.activated.loading')}</p>
               </div>
             )}
 
@@ -202,7 +204,7 @@ export default function SosAction() {
 
                 <div style={{ background: 'rgba(239, 68, 68, 0.1)', padding: '1.25rem', borderLeft: '4px solid var(--severity-critical)', borderRadius: '0.25rem', marginBottom: '1.5rem' }}>
                   <strong style={{ display: 'block', fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--severity-critical)', textTransform: 'uppercase' }}>
-                    IMMEDIATE LIFE-SAVING ACTION:
+                    {t('sos.activated.action_label')}
                   </strong>
                   <p style={{ fontSize: '1.5rem', fontWeight: '700', lineHeight: '1.4', color: 'white' }}>
                     {sosCard.action}
@@ -212,8 +214,8 @@ export default function SosAction() {
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', background: 'var(--bg-base)', padding: '0.75rem 1rem', borderRadius: '0.5rem', marginBottom: '1rem', border: '1px solid var(--border-color)' }}>
                   <Phone size={18} style={{ color: 'var(--severity-low)' }} />
                   <div>
-                    <strong style={{ color: 'var(--text-primary)', fontSize: '0.9rem' }}>Emergency Ambulance:</strong>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Dial 102 or 108 immediately (Government of India Helpline)</p>
+                    <strong style={{ color: 'var(--text-primary)', fontSize: '0.9rem' }}>{t('sos.activated.ambulance_label')}</strong>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{t('sos.activated.ambulance_text')}</p>
                   </div>
                 </div>
 
@@ -229,17 +231,17 @@ export default function SosAction() {
         {!isAlertActive && (
           <div className="card">
             <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-              <Zap size={24} style={{ color: 'var(--color-emergency)' }} /> Quick SOS Cards
+              <Zap size={24} style={{ color: 'var(--color-emergency)' }} /> {t('sos.card.title')}
             </h2>
             <p className="description">
-              In a life-threatening crisis, click one of the hotkeys below or describe the symptom immediately for instant, high-visibility actions.
+              {t('sos.card.description')}
             </p>
 
             {/* Hotkeys Buttons */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-              {hotkeys.map((hk) => (
+              {hotkeyKeys.map((hk) => (
                 <button
-                  key={hk.label}
+                  key={hk.label_key}
                   onClick={() => {
                     setQuery(hk.query)
                     setAudioSiren(true) // Turn on alarm by default for hotkeys
@@ -259,18 +261,18 @@ export default function SosAction() {
                   }}
                 >
                   <AlertTriangle size={24} style={{ color: 'var(--color-emergency)' }} />
-                  <span style={{ fontWeight: '700', fontSize: '0.9rem' }}>{hk.label}</span>
+                  <span style={{ fontWeight: '700', fontSize: '0.9rem' }}>{t(hk.label_key)}</span>
                 </button>
               ))}
             </div>
 
             <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
               <div className="form-group">
-                <label className="form-label">Custom Crisis Description</label>
+                <label className="form-label">{t('sos.card.custom.label')}</label>
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="e.g. kid choked on a small seed..."
+                  placeholder={t('sos.card.custom.placeholder')}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                 />
@@ -285,7 +287,7 @@ export default function SosAction() {
                 disabled={!query.trim()}
                 style={{ width: '100%', padding: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}
               >
-                Trigger Custom SOS Card
+                {t('sos.btn.trigger')}
               </button>
             </div>
           </div>

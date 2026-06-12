@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { MapPin, Navigation, Compass, Search, ExternalLink, RefreshCw, AlertCircle } from 'lucide-react'
 import { logHospitalQueryToSupabase } from '../supabaseClient'
+import { useLanguage } from '../contexts/LanguageContext'
 
 export default function HospitalLocator() {
+  const { t } = useLanguage()
   const [coords, setCoords] = useState({ lat: 12.9716, lng: 77.5946 }) // Default Bangalore coords
   const [useCustomCoords, setUseCustomCoords] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -16,7 +18,7 @@ export default function HospitalLocator() {
     setLocationStatus('locating')
     setError('')
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser.')
+      setError(t('hospital.error.geolocation'))
       setLocationStatus('error')
       return
     }
@@ -48,6 +50,10 @@ export default function HospitalLocator() {
     setSupabaseSync(null)
 
     try {
+      if (!navigator.onLine) {
+        throw new Error('OFFLINE: Hospital map search requires internet connectivity. Please refer to your nearest known primary health center.')
+      }
+
       const response = await fetch(`/api/hospitals/nearby?lat=${lat}&lng=${lng}`)
       if (!response.ok) {
         throw new Error('Hospital database search failed. Overpass API may be offline.')
@@ -84,10 +90,10 @@ export default function HospitalLocator() {
     <div className="hospital-locator" style={{ maxWidth: '900px', margin: '0 auto' }}>
       <div className="card">
         <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-          <MapPin size={24} style={{ color: 'var(--color-emergency)' }} /> Emergency Hospital Locator
+          <MapPin size={24} style={{ color: 'var(--color-emergency)' }} /> {t('hospital.card.title')}
         </h2>
         <p className="description">
-          Uses GPS and OpenStreetMap OpenData to find the closest emergency rooms, clinics, and government hospitals within a 25km radius.
+          {t('hospital.card.description')}
         </p>
 
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
@@ -96,18 +102,19 @@ export default function HospitalLocator() {
             className="btn btn-primary" 
             onClick={fetchBrowserLocation}
             disabled={locationStatus === 'locating'}
-            style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}
+            style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flex: 1, height: '56px', borderRadius: '0.5rem', justifyContent: 'center' }}
           >
             <Compass size={18} className={locationStatus === 'locating' ? 'animate-spin' : ''} />
-            {locationStatus === 'locating' ? 'Accessing GPS...' : 'Locate Me (Use GPS)'}
+            {locationStatus === 'locating' ? t('hospital.card.locating') : t('hospital.btn.find')}
           </button>
 
           <button 
             type="button" 
             className="btn btn-secondary" 
             onClick={() => setUseCustomCoords(!useCustomCoords)}
+            style={{ height: '56px', borderRadius: '0.5rem', padding: '0 1.5rem' }}
           >
-            {useCustomCoords ? 'Hide Manual Settings' : 'Enter Coordinates Manually'}
+            {useCustomCoords ? t('hospital.card.btn.hide_manual') : t('hospital.card.btn.manual')}
           </button>
         </div>
 
@@ -135,15 +142,16 @@ export default function HospitalLocator() {
                 required 
               />
             </div>
-            <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem' }} disabled={loading}>
+            <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem', height: '56px', borderRadius: '0.5rem', width: '56px' }} disabled={loading}>
               <Search size={18} />
             </button>
           </form>
         )}
 
         {locationStatus === 'located' && (
-          <div style={{ fontSize: '0.85rem', color: 'var(--severity-low)', marginBottom: '1rem' }}>
-            ✓ Geolocation active: Latitude {coords.lat.toFixed(4)}, Longitude {coords.lng.toFixed(4)}
+          <div style={{ fontSize: '0.85rem', color: 'var(--severity-low)', background: 'rgba(16, 185, 129, 0.05)', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', border: '1px solid rgba(16, 185, 129, 0.2)', width: 'fit-content' }}>
+            <Navigation size={14} /> 
+            <strong>Location Active:</strong> Latitude {coords.lat.toFixed(4)}, Longitude {coords.lng.toFixed(4)}
           </div>
         )}
       </div>
@@ -166,7 +174,7 @@ export default function HospitalLocator() {
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0.5rem' }}>
                 <h3 style={{ fontSize: '1.15rem' }}>
-                  Hospitals Found ({hospitals.length})
+                  {t('hospital.header.title')} ({hospitals.length})
                 </h3>
                 {supabaseSync === 'synced' && (
                   <span style={{ fontSize: '0.75rem', color: 'var(--severity-low)', fontWeight: '600' }}>
@@ -223,7 +231,7 @@ export default function HospitalLocator() {
                     className="btn btn-secondary"
                     style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}
                   >
-                    <span>Route</span>
+                    <span>{t('hospital.table.btn.navigate')}</span>
                     <ExternalLink size={14} />
                   </a>
                 </div>

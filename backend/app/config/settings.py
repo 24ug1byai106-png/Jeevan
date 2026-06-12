@@ -10,10 +10,10 @@ class Settings(BaseSettings):
     environment: Literal["development", "test", "production"] = "development"
     api_prefix: str = "/api"
 
-    gemini_api_key: str = Field(default="", validation_alias="GEMINI_API_KEY")
-    gemini_model: str = "gemini-1.5-flash"
-    gemini_timeout_seconds: float = 20.0
-    gemini_max_retries: int = 2
+    openrouter_api_key: str = Field(default="", validation_alias="OPENROUTER_API_KEY")
+    openrouter_model: str = "openrouter/auto"
+    openrouter_timeout_seconds: float = 20.0
+    openrouter_max_retries: int = 2
 
     sqlite_path: str = "data/jeevan_ai.sqlite3"
     response_cache_ttl_seconds: int = 3600

@@ -2,7 +2,7 @@ from app.cache.response_cache import ResponseCache, build_cache_key
 from app.prompts.asha_prompt import build_asha_prompt
 from app.schemas.asha import AshaAssistResponse
 from app.schemas.common import DISCLAIMER, Language
-from app.services.gemini_service import GeminiService, GeminiUnavailableError
+from app.services.openrouter_service import OpenRouterService, OpenRouterUnavailableError
 from app.services.offline_knowledge_service import OfflineKnowledgeService
 from app.services.translation_service import TranslationService
 from app.services.triage_service import TriageService
@@ -12,7 +12,7 @@ class AshaService:
     def __init__(self) -> None:
         self.translation_service = TranslationService()
         self.triage_service = TriageService()
-        self.gemini_service = GeminiService()
+        self.openrouter_service = OpenRouterService()
         self.offline_service = OfflineKnowledgeService()
         self.cache = ResponseCache()
 
@@ -29,9 +29,9 @@ class AshaService:
 
         prompt = build_asha_prompt(patient_age, symptoms, prompt_language)
         try:
-            response = self.gemini_service.generate_json(prompt, AshaAssistResponse, "asha_assist")
+            response = self.openrouter_service.generate_json(prompt, AshaAssistResponse, "asha_assist")
             response = response.model_copy(update={"disclaimer": DISCLAIMER})
-        except GeminiUnavailableError:
+        except OpenRouterUnavailableError:
             response = self._offline_assist(patient_age, symptoms, language)
 
         self.cache.set(cache_key, response.model_dump(by_alias=True))

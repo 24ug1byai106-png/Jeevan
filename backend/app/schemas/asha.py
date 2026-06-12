@@ -5,7 +5,7 @@ from app.schemas.common import DISCLAIMER, Language, Severity
 
 class AshaAssistRequest(BaseModel):
     patient_age: int = Field(..., alias="patientAge", ge=0, le=120, examples=[55])
-    symptoms: str = Field(..., min_length=2, max_length=2000, examples=["chest pain"])
+    symptoms: str = Field(..., min_length=10, max_length=2000, examples=["chest pain"])
     language: Language = Field(default=Language.hindi, examples=["Hindi"])
 
     model_config = ConfigDict(
@@ -17,33 +17,45 @@ class AshaAssistRequest(BaseModel):
 
 
 class AshaAssistResponse(BaseModel):
-    emergency: str
+    condition: str
     severity: Severity
     severity_score: int = Field(..., alias="severityScore", ge=0, le=100)
-    instructions: list[str]
-    red_flags: list[str] = Field(..., alias="redFlags")
-    referral_required: bool = Field(..., alias="referralRequired")
+    confidence: str
+    immediate_risk: str = Field(..., alias="immediateRisk")
+    first_aid: list[str] = Field(..., alias="firstAid")
+    avoid: list[str]
+    hospital_required: bool = Field(..., alias="hospitalRequired")
+    nearest_facility: str = Field(..., alias="nearestFacility")
+    referral_recommendation: str = Field(..., alias="referralRecommendation")
     message_for_family: str = Field(..., alias="messageForFamily")
     disclaimer: str = DISCLAIMER
-    source: str = "gemini"
+    source: str = "openrouter"
 
     model_config = ConfigDict(
         populate_by_name=True,
         json_schema_extra={
             "example": {
-                "emergency": "Heart Attack",
+                "condition": "Heat Stroke",
                 "severity": "Critical",
                 "severityScore": 95,
-                "instructions": [
-                    "रोगी को आराम से बैठाएं या लिटाएं।",
-                    "तुरंत एम्बुलेंस बुलाएं।",
-                    "सांस और होश की निगरानी करें।",
+                "confidence": "92%",
+                "immediateRisk": "Patient may become unconscious if untreated.",
+                "firstAid": [
+                    "Move patient to shade immediately",
+                    "Give cool water slowly",
+                    "Remove excess clothing",
+                    "Cool body with wet cloth"
                 ],
-                "redFlags": ["बेहोशी", "तेज सीने का दर्द", "सांस लेने में कठिनाई"],
-                "referralRequired": True,
+                "avoid": [
+                    "Do not leave patient in direct sunlight",
+                    "Do not force large amounts of water quickly"
+                ],
+                "hospitalRequired": True,
+                "nearestFacility": "District Hospital 4.2 km away",
+                "referralRecommendation": "Urgent transport recommended within 30 minutes.",
                 "messageForFamily": "तुरंत अस्पताल ले जाएं और देरी न करें।",
                 "disclaimer": DISCLAIMER,
-                "source": "gemini",
+                "source": "openrouter",
             }
         },
     )
